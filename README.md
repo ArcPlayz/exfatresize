@@ -4,6 +4,8 @@ This tool allows you to resize ExFAT partition in-place.
 ### When you shrink the partition, you have use this tool first - then you update partition scheme.
 ### When you stretch the partition, you update partition scheme first!
 ## This utility has not been thoroughly tested!
-### It seems to work well, when it has to update bootsector, FAT and allocation bitmap only. Is it safe, if it has to physically move clusters? I don't really know.
+### It seems to work well, when it has to update bootsector, FAT and allocation bitmap.
+### Physically moving clusters while shrinking partition also passed correctly during the quick test.
+### The edge-case, which I'm not sure about, is when the partition is stretched so much that the initial clusters need to be moved forward to make room for the much larger FAT
 ## If your partition contains important data, do not use this tool, or make a backup first!
 This tool was created for Linux interoperability with Windows. NTFS sometimes happens to be problematic in that use-case.
