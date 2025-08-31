@@ -26,7 +26,7 @@ class Fat(list):
 			elif value == 0xFFFFFFF7:
 				raise Exception(
 					'Found a cluster marked as broken in FAT.\n' +
-					'It seems that this device does not handle defective blocks internally, leaving error management to the filesystem itself.\n'
+					'It seems that this device does not handle defective blocks internally, leaving error management to the filesystem itself.\n' +
 					'Because of this, resizing the partition is unsafe and has been aborted.'
 				)
 			else:
