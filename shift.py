@@ -46,8 +46,6 @@ def Shift(bootsector, calculations, fat, structure):
 		for i in range(calculations.cluster_count)
 	)
 
-	zeroes -= set(fat.broken())
-
 	to_move = []
 
 	for position, chain in structure.items():

@@ -7,7 +7,6 @@ class Fat(list):
 		Reserved = object()
 		End = object()
 		Unused = object()
-		Broken = object()
 
 	@staticmethod
 	def Generator(fd_r, bootsector):
@@ -25,7 +24,11 @@ class Fat(list):
 			elif value == 0:
 				yield Fat.Values.Unused
 			elif value == 0xFFFFFFF7:
-				yield Fat.Values.Broken
+				raise Exception(
+					'Found a cluster marked as broken in FAT.\n' +
+					'It seems that this device does not handle defective blocks internally, leaving error management to the filesystem itself.\n'
+					'Because of this, resizing the partition is unsafe and has been aborted.'
+				)
 			else:
 				yield value
 
@@ -43,22 +46,8 @@ class Fat(list):
 
 		return tuple(chain)
 
-	def broken(self):
-		return tuple(
-			i for i, value in enumerate(self) if value == Fat.Values.Broken
-		)
-
 	def update(self, calculations, structure, shift):
-		broken_new = tuple(
-			address - calculations.fat_diff
-			for address in self.broken()
-			if 2 <= address - calculations.fat_diff <= 1 + calculations.cluster_count
-		)
-	
 		self[:] = [Fat.Values.Reserved] * 2 + [Fat.Values.Unused] * calculations.cluster_count
-
-		for address in broken_new:
-			self[address] = Fat.Values.Broken
 
 		for position, chain in (structure | shift).items():
 			if not is_contiguous(chain) or position in (structure.position_bitmap, structure.position_table, None):
@@ -78,8 +67,6 @@ class Fat(list):
 				yield 0xFFFFFFFF
 			elif value == Fat.Values.Unused:
 				yield 0
-			elif value == Fat.Values.Broken:
-				yield 0xFFFFFFF7
 			else:
 				yield value
 
